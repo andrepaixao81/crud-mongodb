@@ -1,8 +1,10 @@
+require('dotenv').config();
 const express = require ('express');
+
 //dados de conexao com o banco
 const { MongoClient, ObjectId } = require('mongodb');
 // const DB_URL = "mongodb://localhost:27017";
-const DB_URL = "mongodb+srv://admin:u7S5IKf1dY7NGnX5@cluster0.qrhq309.mongodb.net";
+const DB_URL = process.env.LINK; // Neste local substituir pelo endereço do banco local ou na nuvem
 const DB_NAME = "teste"
 
 async function main () {
@@ -26,14 +28,12 @@ app.get("/dados", async (req,res)=>{
     res.send(clientes)
 });
 
-
 //obter dados por id
 app.get("/dados/:id", async (req,res)=>{
 
     const id = req.params.id
     const clientes = await collection.findOne({ _id: new ObjectId(id) });
     res.send(clientes);
-
 });
 
 //Adicionar dados no banco
@@ -43,28 +43,25 @@ app.post("/dados", async (req,res)=>{
     res.send(cliente)
 });
 
-//Atualizar um registro
+//Atualizar um registro por id
 app.put("/dados/:id", async (req, res)=>{
     const id = req.params.id
     const body = req.body
-
+    //console.log(id, body)
     await collection.updateOne(
         { _id: new ObjectId(id)},
         { $set: body}
-    );
-     //console.log(id, body)
-
+    ); 
     res.send(body)
 });
 
 //Deletar um registro
-
 app.delete("/dados/:id", async (req, res)=>{
     const id = req.params.id
     const body = req.body
-    console.log(id, body)   
+    console.log(id)   
     await collection.deleteOne({ _id:new ObjectId(id)} )
-    res.send("Dados deletados com sucesso!")
+    res.send("Registro deletado com sucesso!")
    
 });
 
