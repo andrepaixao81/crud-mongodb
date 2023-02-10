@@ -65,20 +65,8 @@ app.delete("/dados/:id", async (req, res)=>{
    
 });
 
-
-/*app.post("/dados", async (req,res)=>{
-    const dados_cliente = {
-        nome: req.body.nome,
-        idade: req.body.idade,
-        naturalidade: req.body.naturalidade        
-    }
-    await collection.insertOne(dados_cliente)
-    res.send("Dados inseridos com sucesso!")
-    console.log(req.body)  
-});*/
-
-
-
 app.listen(port, ()=>{console.log(`Servidor rodando na porta: ${port}`)})
 
-} main ()
+} 
+
+main ()
