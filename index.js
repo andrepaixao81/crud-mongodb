@@ -1,7 +1,8 @@
 const express = require ('express');
 //dados de conexao com o banco
-const { MongoClient } = require('mongodb');
-const DB_URL = "mongodb://localhost:27017";
+const { MongoClient, ObjectId } = require('mongodb');
+// const DB_URL = "mongodb://localhost:27017";
+const DB_URL = "mongodb+srv://admin:u7S5IKf1dY7NGnX5@cluster0.qrhq309.mongodb.net";
 const DB_NAME = "teste"
 
 async function main () {
@@ -19,30 +20,53 @@ const port = 3000
 
 //rotas
 
+//Obter dados do banco
 app.get("/dados", async (req,res)=>{
     const clientes = await collection.find().toArray();
     res.send(clientes)
 });
 
-app.get("/dados/:_id",async(req,res)=>{
 
-    const { _id } = req.params
-    await collection.findOne(_id);
-    res.send("ok")
+//obter dados por id
+app.get("/dados/:id", async (req,res)=>{
 
-})
+    const id = req.params.id
+    const clientes = await collection.findOne({ _id: new ObjectId(id) });
+    res.send(clientes);
 
-app.post("/dados", async (req,res)=>{
-    const dados = req.body
-    await collection.insertOne(dados)
-    res.send(dados)
 });
 
-app.delete("/dados:_id",async (req,res)=>{
-    const dados =req.params._id
-    await collection.findOneAndDelete(dados)
-    res.send("Dados deletados")
-})
+//Adicionar dados no banco
+app.post("/dados", async (req,res)=>{
+    const cliente = req.body
+    await collection.insertOne(cliente)
+    res.send(cliente)
+});
+
+//Atualizar um registro
+app.put("/dados/:id", async (req, res)=>{
+    const id = req.params.id
+    const body = req.body
+
+    await collection.updateOne(
+        { _id: new ObjectId(id)},
+        { $set: body}
+    );
+     //console.log(id, body)
+
+    res.send(body)
+});
+
+//Deletar um registro
+
+app.delete("/dados/:id", async (req, res)=>{
+    const id = req.params.id
+    const body = req.body
+    console.log(id, body)   
+    await collection.deleteOne({ _id:new ObjectId(id)} )
+    res.send("Dados deletados com sucesso!")
+   
+});
 
 
 /*app.post("/dados", async (req,res)=>{
@@ -55,21 +79,6 @@ app.delete("/dados:_id",async (req,res)=>{
     res.send("Dados inseridos com sucesso!")
     console.log(req.body)  
 });*/
-
-app.delete("/dados/:_id",async (req,res)=>{
-
-    const cod_cliente = {idade: req.params._id}
-    console.log(cod_cliente)
-    await collection.findOneAndDelete({cod_cliente})
-
-    /*const { _id } = req.params._id;
-    const user = await collection.findOneAndDelete({_id})*/
-    res.json(cod_cliente)
-    res.send("Usuário deletado com sucesso")
-
-});
-
-
 
 
 
